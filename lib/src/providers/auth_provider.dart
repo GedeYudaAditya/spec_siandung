@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
+import 'dart:convert';
 
 class AuthProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -18,11 +19,21 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final response = await _apiService.login(username, password);
-      // Handle the response, save tokens, etc.
-      // final token = response['token'];
 
-      // rondom token
-      final token = Random().nextInt(100000).toString();
+      // Handle the response, save tokens, etc.
+      final token = response['data']['token'];
+
+      // decode the token to get the user data
+      final userData = json.decode(
+        ascii.decode(
+          base64.decode(
+            base64.normalize(token.split(".")[1]),
+          ),
+        ),
+      );
+
+      print(userData);
+      // {id: ID000040, nama: Cliff Miller Sanjaya, username: ciffaaa, role: 3, exp: 1718606824}
 
       if (rememberMe) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,22 +43,15 @@ class AuthProvider with ChangeNotifier {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
-
-      // user information
-      await prefs.setString('id', response['data']['id'].toString());
-      await prefs.setString('nama', response['data']['nama']);
-      await prefs.setString('nama_user', response['data']['nama_user']);
-      await prefs.setString('created_at', response['data']['created_at']);
-      await prefs.setString('updated_at', response['data']['updated_at']);
-      // await prefs.setString('password', response['data']['password']);
-      await prefs.setString('isactive', response['data']['isactive']);
-      await prefs.setString(
-          'id_jenispengguna', response['data']['id_jenispengguna'].toString());
+      await prefs.setString('id', userData['id']);
+      await prefs.setString('nama', userData['nama']);
+      await prefs.setInt('role', int.parse(userData['role'].toString()));
 
       _isLoading = false;
       notifyListeners();
       return true;
     } catch (e) {
+      print(e);
       _isLoading = false;
       notifyListeners();
       return false;
@@ -55,17 +59,19 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Register a new user
-  Future<bool> register(String email, String username, String password) async {
+  Future<bool> register(
+      String nisn, String username, String noTelp, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await _apiService.register(email, username, password);
+      final response =
+          await _apiService.register(nisn, username, noTelp, password);
       // Handle the response, save tokens, etc.
 
       // if successful, login the user
-      if (!response['error']) {
-        final loginRes = await login(email, password, false);
+      if (response['status']) {
+        final loginRes = await login(username, password, false);
         if (loginRes) {
           _isLoading = false;
           notifyListeners();
@@ -97,7 +103,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> checkRememberMe() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('email');
+    final email = prefs.getString('username');
     final password = prefs.getString('password');
 
     if (email != null && password != null) {
@@ -110,7 +116,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
-    await prefs.remove('email');
+    await prefs.remove('username');
     await prefs.remove('password');
     _isLoggedIn = false;
     await prefs.setString('isloggedIn', _isLoggedIn.toString());

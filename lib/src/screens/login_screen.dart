@@ -149,6 +149,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                           const SizedBox(height: 20),
+                          // Register text redirect
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Belum punya akun? '),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushNamed('/register');
+                                },
+                                child: const Text(
+                                  'Daftar',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),

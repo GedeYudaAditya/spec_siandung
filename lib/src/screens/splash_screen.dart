@@ -1,7 +1,6 @@
 // lib/src/screens/splash_screen.dart
 import 'dart:io';
 
-import 'package:spec_siandung/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';

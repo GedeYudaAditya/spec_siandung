@@ -12,9 +12,10 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _nisnController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _noHpController = TextEditingController();
   final _confirmPasswordController =
       TextEditingController(); // Track the "Remember Me" checkbox state
 
@@ -55,13 +56,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: _emailController,
+                        controller: _nisnController,
                         decoration: const InputDecoration(
-                            labelText: 'Email',
-                            icon: Icon(Icons.alternate_email_rounded)),
+                            labelText: 'NISN',
+                            icon: Icon(Icons.account_circle_outlined)),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your NISN';
                           }
                           return null;
                         },
@@ -74,6 +75,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Please enter your username';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _noHpController,
+                        decoration: const InputDecoration(
+                            labelText: 'No. HP',
+                            icon: Icon(Icons.phone_outlined)),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your phone number';
                           }
                           return null;
                         },
@@ -123,8 +136,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     bool success = await authProvider.register(
-                                      _emailController.text,
+                                      _nisnController.text,
                                       _usernameController.text,
+                                      _noHpController.text,
                                       _passwordController.text,
                                     );
                                     if (success) {

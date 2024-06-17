@@ -1,16 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spec_siandung/src/providers/auth_provider.dart';
+import 'package:spec_siandung/src/utils/role_utils.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
-  final int index;
-  const AppBarWidget(
-      {super.key, required this.scaffoldKey, required this.index});
+  const AppBarWidget({super.key, required this.scaffoldKey});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
 
   @override
+  State<AppBarWidget> createState() => _AppBarWidgetState();
+}
+
+class _AppBarWidgetState extends State<AppBarWidget> {
+  String? token;
+  String? id;
+  String? nama;
+  int? role;
+
+  // get shared preferences
+  Future<void> _getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+    id = prefs.getString('id');
+    nama = prefs.getString('nama');
+    role = prefs.getInt('role');
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getSharedPrefs();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     Widget userAvatar = Row(
       children: [
         Image.asset(
@@ -20,11 +49,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           height: 30,
         ),
         const SizedBox(width: 10),
-        const Column(
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'John Doe',
+              nama ?? "Nama Pengguna",
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -32,41 +61,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
             Text(
-              "Siswa",
+              RoleUtils.getRole(role ?? 1),
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-
-    Widget ganabot = Row(
-      children: [
-        Image.asset(
-          fit: BoxFit.fill,
-          'lib/assets/images/ganabot.png',
-          width: 30,
-          height: 30,
-        ),
-        const SizedBox(width: 10),
-        const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'GaneshaBot',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            Text(
-              "Online",
-              style: TextStyle(
-                color: Colors.lightGreenAccent,
                 fontSize: 12,
               ),
             ),
@@ -76,73 +73,26 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     );
 
     List<Widget> actions = [
-      // Notification button with image
-      Row(
-        children: [
-          Image.asset(
-            fit: BoxFit.fill,
-            'lib/assets/images/star.png',
-            width: 24,
-            height: 24,
-          ),
-          const Text(
-            '25',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-        ],
+      // Notification
+      // Logout button icon
+      IconButton(
+        icon: const Icon(Icons.logout),
+        onPressed: () {
+          authProvider.logout();
+          Navigator.of(context).pushReplacementNamed('/login');
+        },
       ),
-      const SizedBox(width: 16),
-      Row(
-        children: [
-          Image.asset(
-            fit: BoxFit.fill,
-            'lib/assets/images/medal.png',
-            width: 24,
-            height: 24,
-          ),
-          const Text(
-            '4',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-      TextButton(
-        onPressed: () {},
-        child: Image.asset(
-          fit: BoxFit.fill,
-          'lib/assets/images/notification.png',
-          width: 18,
-          height: 18,
-        ),
-      )
     ];
 
-    bool shouldShowDrawer(int index) {
-      // Define the indexes that should show the Drawer
-      const drawerIndexes = [
-        // 1,
-      ]; // Add the indexes for which you want to show the Drawer
-
-      return drawerIndexes.contains(index);
-    }
-
     return AppBar(
-      leading: shouldShowDrawer(index)
-          ? IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                scaffoldKey.currentState!.openDrawer();
-              },
-            )
-          : null,
-      title: shouldShowDrawer(index) ? ganabot : userAvatar,
-      actions: shouldShowDrawer(index) ? null : actions,
+      leading: IconButton(
+        icon: const Icon(Icons.menu),
+        onPressed: () {
+          widget.scaffoldKey.currentState!.openDrawer();
+        },
+      ),
+      title: userAvatar,
+      actions: actions,
     );
   }
 }
