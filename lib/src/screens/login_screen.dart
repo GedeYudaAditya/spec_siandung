@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false; // Track the "Remember Me" checkbox state
-  String appName = 'ABE';
+  String appName = 'SIAP';
   @override
   void initState() {
     super.initState();

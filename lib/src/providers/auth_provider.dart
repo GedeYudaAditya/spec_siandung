@@ -97,6 +97,33 @@ class AuthProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     _isLoggedIn = token != null;
+
+    // check token expired or not
+    if (_isLoggedIn && token != null) {
+      final userData = json.decode(
+        ascii.decode(
+          base64.decode(
+            base64.normalize(token.split(".")[1]),
+          ),
+        ),
+      );
+
+      final exp = userData['exp'] as int;
+      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      if (exp < now) {
+        _isLoggedIn = false;
+        await prefs.remove('token');
+
+        // remove other user data
+        await prefs.remove('id');
+        await prefs.remove('nama');
+        await prefs.remove('role');
+
+        // logout
+        await logout();
+      }
+    }
     await prefs.setString('isloggedIn', _isLoggedIn.toString());
     notifyListeners();
   }

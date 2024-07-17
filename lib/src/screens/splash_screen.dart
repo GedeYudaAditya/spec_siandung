@@ -2,9 +2,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:spec_siandung/src/providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -46,6 +48,20 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    print(token);
+
+    if (token != null) {
+      // Token exists, navigate to home screen
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      // No token, navigate to login screen
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
+  }
+
   Future<void> _getDeviceId() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     String identifier = 'Unknown';
@@ -70,20 +86,6 @@ class _SplashScreenState extends State<SplashScreen>
     await prefs.setString('device_id', _deviceInfo!);
   }
 
-  Future<void> _checkLoginStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    print(token);
-
-    if (token != null) {
-      // Token exists, navigate to home screen
-      Navigator.of(context).pushReplacementNamed('/home');
-    } else {
-      // No token, navigate to login screen
-      Navigator.of(context).pushReplacementNamed('/login');
-    }
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -92,6 +94,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
+
+    // Check if the user is already logged in
+    authProvider.checkLoginStatus();
+
     return Scaffold(
       body: Center(
         child: FadeTransition(
