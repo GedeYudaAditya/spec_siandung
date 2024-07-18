@@ -3,30 +3,36 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final String _baseUrl = 'http://192.168.1.106/siandung/api';
+  final String _baseUrl = 'https://mobile.siandung.com/api';
 
   // Example of a GET request
   Future<Map<String, dynamic>> fetchData(String endpoint) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    try {
+      final token = prefs.getString('token');
 
-    print('Token: $token');
+      print('Token: $token');
 
-    final response = await http.get(
-      Uri.parse('$_baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer $token', // Use the token in the Authorization header
-      },
-    );
+      final response = await http.get(
+        Uri.parse('$_baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer $token', // Use the token in the Authorization header
+        },
+      );
 
-    print('Response: ${response.body}');
+      print('Response: ${response.body}');
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load data');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print(response.body);
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error API: $e');
+      throw Exception(e);
     }
   }
 
@@ -34,21 +40,27 @@ class ApiService {
   Future<Map<String, dynamic>> postData(
       String endpoint, Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    try {
+      final token = prefs.getString('token');
 
-    final response = await http.post(
-      Uri.parse('$_baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(data),
-    );
+      final response = await http.post(
+        Uri.parse('$_baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Bearer $token',
+        },
+        body: data,
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to post data');
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print(response.body);
+        throw Exception('Failed to post data');
+      }
+    } catch (e) {
+      print('Error API: $e');
+      throw Exception(e);
     }
   }
 
@@ -56,36 +68,48 @@ class ApiService {
   Future<Map<String, dynamic>> putData(
       String endpoint, Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    try {
+      final token = prefs.getString('token');
 
-    final response = await http.put(
-      Uri.parse('$_baseUrl/$endpoint'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(data),
-    );
+      final response = await http.put(
+        Uri.parse('$_baseUrl/$endpoint'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': 'Bearer $token',
+        },
+        body: data,
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to put data');
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print(response.body);
+        throw Exception('Failed to put data');
+      }
+    } catch (e) {
+      print('Error API: $e');
+      throw Exception(e);
     }
   }
 
   // Delete
-  Future<Map<String, dynamic>> deleteData(String endpoint) async {
+  Future<Map<String, dynamic>> deleteData(
+      String endpoint, Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     final response = await http.delete(
       Uri.parse('$_baseUrl/$endpoint'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': 'Bearer $token',
       },
+      body: data,
     );
+
+    print(response.body);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -99,20 +123,18 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$_baseUrl/login'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: jsonEncode({
+      body: {
         'username': username,
         'password': password,
-      }),
+      },
     );
 
+    print(response.body);
+
     if (response.statusCode == 200) {
-      if (jsonDecode(response.body)['status']) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(jsonDecode(response.body)['message']);
-      }
+      return jsonDecode(response.body);
     } else {
       throw Exception('Failed to login ${response.body}');
     }

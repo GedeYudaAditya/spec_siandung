@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spec_siandung/src/models/laporan.dart';
 import 'package:spec_siandung/src/services/api_service.dart';
+import 'package:spec_siandung/src/utils/role_utils.dart';
 import 'package:spec_siandung/src/widgets/app_bar_widget.dart';
 import 'package:spec_siandung/src/widgets/drawer_widget.dart';
 
@@ -17,21 +20,60 @@ class _LaporanScreenState extends State<LaporanScreen> {
   final apiService = ApiService();
   List<Laporan> dataLaporan = [];
 
+  String? token;
+  String? id;
+  String? nama;
+  int? role;
+
+  TextEditingController keteranganController = TextEditingController();
+
+  bool dataIsReady = false;
+
   @override
   void initState() {
     super.initState();
-    _getLaporan();
+    setState(() {
+      _getLaporan();
+      _getSharedPrefs();
+      dataIsReady = true;
+    });
   }
 
   Future<void> _getLaporan() async {
     final body = await apiService.fetchData(
-      'perundungan_by_siswa',
+      'perundungan',
     );
 
     print(body);
 
     final List<dynamic> listLaporan = body['data'];
     dataLaporan = listLaporan.map((e) => Laporan.fromJson(e)).toList();
+    setState(() {
+      dataLaporan = dataLaporan;
+      dataIsReady = true;
+    });
+  }
+
+  Future<void> _createLaporan() async {
+    final body = await apiService.postData(
+      'create_perundungan_by_siswa',
+      {
+        'keterangan': keteranganController.text,
+      },
+    );
+
+    print('Response Create: $body');
+
+    await _getLaporan();
+  }
+
+  // get shared preferences
+  Future<void> _getSharedPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+    id = prefs.getString('id');
+    nama = prefs.getString('nama');
+    role = prefs.getInt('role');
     setState(() {});
   }
 
@@ -77,37 +119,230 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: dataLaporan.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.grey[200],
-                        child: ListTile(
-                          title: Text(dataLaporan[index].klarifikasi ?? ''),
-                          subtitle: Text(dataLaporan[index].keterangan ?? '',
-                              style: TextStyle(
-                                  color: Colors.grey[600], fontSize: 10)),
-                          trailing: Text(dataLaporan[index].dateCreated ?? '',
-                              style: TextStyle(
-                                  color: Colors.grey[600], fontSize: 10)),
+                  child: (dataIsReady)
+                      ?
+                      // Display datatable here
+                      ListView.builder(
+                          itemCount: dataLaporan.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                  onTap: () => Navigator.pushNamed(
+                                        context,
+                                        '/detail-laporan',
+                                        arguments: dataLaporan[index],
+                                      ),
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.red[100],
+                                    child: const Icon(Icons.campaign),
+                                  ),
+                                  title: Text(
+                                      dataLaporan[index].klarifikasi ?? '',
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold)),
+                                  subtitle: Text(
+                                      dataLaporan[index].dateCreated ?? '',
+                                      style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 10)),
+                                  trailing: role ==
+                                          RoleUtils.getRoleIndex(
+                                              RoleUtils.student)
+                                      ? IconButton(
+                                          icon: const Icon(Icons.delete),
+                                          onPressed: () {
+                                            // Pop up dialog to delete laporan
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Hapus Laporan'),
+                                                  content: const Text(
+                                                      'Apakah Anda yakin ingin menghapus laporan ini?'),
+                                                  actions: [
+                                                    ElevatedButton(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child:
+                                                          const Text('Batal'),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        // pop up circle loading
+                                                        showDialog(
+                                                          barrierColor:
+                                                              Colors.white60,
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            );
+                                                          },
+                                                        );
+
+                                                        // Delete laporan
+                                                        await apiService.deleteData(
+                                                            'delete_perundungan_by_siswa',
+                                                            {
+                                                              'id_laporan':
+                                                                  dataLaporan[
+                                                                          index]
+                                                                      .id,
+                                                            }).then((value) {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          _getLaporan();
+                                                        }).onError((error,
+                                                            stackTrace) {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          // Show error message pop up
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (context) {
+                                                              return AlertDialog(
+                                                                title:
+                                                                    const Text(
+                                                                        'Error'),
+                                                                content: Text(
+                                                                    'Gagal menghapus laporan: $error'),
+                                                                actions: [
+                                                                  ElevatedButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child:
+                                                                        const Text(
+                                                                            'OK'),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        });
+                                                      },
+                                                      child:
+                                                          const Text('Hapus'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                        )
+                                      : null),
+                            );
+                          },
+                        )
+                      :
+                      // Display loading indicator here
+                      const Center(
+                          child: CircularProgressIndicator(),
                         ),
-                      );
-                    },
-                  ),
                 ),
                 // Add button here
-                ElevatedButton(
-                  onPressed: () {
-                    // Add action here
-                  },
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add),
-                      Text('Tambah Laporan'),
-                    ],
-                  ),
-                ),
+                role == RoleUtils.getRoleIndex(RoleUtils.student)
+                    ? ElevatedButton(
+                        onPressed: () {
+                          // Pop up dialog to add new laporan
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Tambah Laporan'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      controller: keteranganController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Keterangan',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Batal'),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      showDialog(
+                                        barrierColor: Colors.white60,
+                                        context: context,
+                                        builder: (context) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      );
+                                      // Add new laporan
+                                      await _createLaporan().then((value) {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      }).onError((error, stackTrace) {
+                                        Navigator.of(context).pop();
+                                        // Show error message pop up
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: const Text('Error'),
+                                              content: Text(
+                                                  'Gagal menambahkan laporan: $error'),
+                                              actions: [
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      });
+                                    },
+                                    child: const Text('Tambah'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add),
+                            Text('Tambah Laporan'),
+                          ],
+                        ),
+                      )
+                    : Spacer()
               ],
             ),
           ),

@@ -23,7 +23,7 @@ class RoleUtils {
   }
 
   static int getRoleIndex(String role) {
-    return roles.indexWhere((element) => element.values.first == role);
+    return roles.indexWhere((element) => element.values.first == role) + 1;
   }
 
   static List<String> getRoles() {
