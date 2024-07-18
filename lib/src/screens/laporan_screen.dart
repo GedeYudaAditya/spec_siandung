@@ -127,11 +127,23 @@ class _LaporanScreenState extends State<LaporanScreen> {
                           itemBuilder: (context, index) {
                             return Card(
                               child: ListTile(
-                                  onTap: () => Navigator.pushNamed(
+                                  onTap: () {
+                                    if (RoleUtils.getRoleIndex(
+                                            RoleUtils.psychologist) ==
+                                        role) {
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/log',
+                                        arguments: dataLaporan[index],
+                                      );
+                                    } else {
+                                      Navigator.pushNamed(
                                         context,
                                         '/detail-laporan',
                                         arguments: dataLaporan[index],
-                                      ),
+                                      );
+                                    }
+                                  },
                                   leading: CircleAvatar(
                                     backgroundColor: Colors.red[100],
                                     child: const Icon(Icons.campaign),
@@ -342,7 +354,9 @@ class _LaporanScreenState extends State<LaporanScreen> {
                           ],
                         ),
                       )
-                    : Spacer()
+                    : SizedBox(
+                        height: 0,
+                      ),
               ],
             ),
           ),

@@ -121,98 +121,108 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                             child: Text('Lihat Log'),
                           ),
                         )
-                      : Spacer(),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // pop up dialog untuk edit laporan
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Edit Laporan'),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  FormField(
-                                    key: _formKey,
-                                    builder: (field) => TextFormField(
-                                      controller: _keteranganController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Keterangan',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Keterangan tidak boleh kosong';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('Cancel'),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          showDialog(
-                                            barrierColor: Colors.white60,
-                                            context: context,
-                                            builder: (context) {
-                                              return const Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              );
+                      : SizedBox(),
+                  role == RoleUtils.getRoleIndex(RoleUtils.student)
+                      ? Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // pop up dialog untuk edit laporan
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Edit Laporan'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        FormField(
+                                          key: _formKey,
+                                          builder: (field) => TextFormField(
+                                            maxLines: 5,
+                                            controller: _keteranganController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Keterangan',
+                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Keterangan tidak boleh kosong';
+                                              }
+                                              return null;
                                             },
-                                          );
-                                          // update laporan
-                                          final result = await _updateLaporan(
-                                              args.id,
-                                              _keteranganController.text);
-
-                                          if (result) {
-                                            // change the data in the previous screen
-                                            args.keterangan =
-                                                _keteranganController.text;
-
-                                            setState(() {});
-
-                                            Navigator.pop(context);
-                                          } else {
-                                            Navigator.pop(context);
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Gagal mengupdate laporan')));
-                                          }
-                                        },
-                                        child: Text('Save'),
-                                      ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text('Edit'),
-                    ),
-                  ),
+                                    actions: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Cancel'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                showDialog(
+                                                  barrierColor: Colors.white60,
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    );
+                                                  },
+                                                );
+                                                // update laporan
+                                                final result =
+                                                    await _updateLaporan(
+                                                        args.id,
+                                                        _keteranganController
+                                                            .text);
+
+                                                if (result) {
+                                                  // change the data in the previous screen
+                                                  args.keterangan =
+                                                      _keteranganController
+                                                          .text;
+
+                                                  setState(() {});
+
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: Text(
+                                                              'Berhasil mengupdate laporan')));
+                                                } else {
+                                                  Navigator.pop(context);
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: Text(
+                                                              'Gagal mengupdate laporan')));
+                                                }
+                                              },
+                                              child: Text('Save'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Text('Edit'),
+                          ),
+                        )
+                      : SizedBox(),
                 ],
               ),
             ),
