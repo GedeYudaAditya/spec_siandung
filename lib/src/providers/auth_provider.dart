@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spec_siandung/src/models/user.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
 
@@ -41,10 +42,27 @@ class AuthProvider with ChangeNotifier {
         await prefs.setString('password', password);
       }
 
+      // get info user from api
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       await prefs.setString('id', userData['id']);
       await prefs.setString('nama', userData['nama']);
+
+      final userInfo = await _apiService.fetchData('profile');
+
+      // add id to user data confert to int
+      userInfo['data']['id'] = userData['id'].toString();
+      userInfo['data']['role'] = int.parse(userData['role'].toString());
+
+      User user = User.fromJson(userInfo['data']);
+
+      await prefs.setString('username', user.username);
+      await prefs.setString('email', user.email ?? '');
+      await prefs.setString('noTelp', user.noTelp ?? '');
+      await prefs.setString('alamat', user.alamat ?? '');
+      await prefs.setString('foto', user.foto ?? '');
+      await prefs.setString('namaSekolah', user.namaSekolah ?? '');
       await prefs.setInt('role', int.parse(userData['role'].toString()));
 
       _isLoading = false;
@@ -108,21 +126,27 @@ class AuthProvider with ChangeNotifier {
         ),
       );
 
-      final exp = userData['exp'] as int;
-      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      // final exp = userData['exp'] as int;
+      // final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-      if (exp < now) {
-        _isLoggedIn = false;
-        await prefs.remove('token');
+      // if (exp < now) {
+      //   _isLoggedIn = false;
+      //   await prefs.remove('token');
 
-        // remove other user data
-        await prefs.remove('id');
-        await prefs.remove('nama');
-        await prefs.remove('role');
+      //   // remove other user data
+      //   await prefs.remove('id');
+      //   await prefs.remove('nama');
+      //   await prefs.remove('role');
+      //   await prefs.remove('username');
+      //   await prefs.remove('email');
+      //   await prefs.remove('noTelp');
+      //   await prefs.remove('alamat');
+      //   await prefs.remove('foto');
+      //   await prefs.remove('namaSekolah');
 
-        // logout
-        await logout();
-      }
+      //   // logout
+      //   await logout();
+      // }
     }
     await prefs.setString('isloggedIn', _isLoggedIn.toString());
     notifyListeners();
@@ -145,6 +169,15 @@ class AuthProvider with ChangeNotifier {
     await prefs.remove('token');
     await prefs.remove('username');
     await prefs.remove('password');
+    await prefs.remove('id');
+    await prefs.remove('nama');
+    await prefs.remove('role');
+    await prefs.remove('email');
+    await prefs.remove('noTelp');
+    await prefs.remove('alamat');
+    await prefs.remove('foto');
+    await prefs.remove('namaSekolah');
+
     _isLoggedIn = false;
     await prefs.setString('isloggedIn', _isLoggedIn.toString());
     notifyListeners();

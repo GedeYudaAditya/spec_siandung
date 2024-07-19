@@ -15,6 +15,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   String? id;
   String? nama;
   int? role;
+  String? image;
 
   // get shared preferences
   Future<void> _getSharedPrefs() async {
@@ -23,6 +24,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     id = prefs.getString('id');
     nama = prefs.getString('nama');
     role = prefs.getInt('role');
+    image = prefs.getString('foto');
+
     setState(() {});
   }
 
@@ -40,8 +43,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           UserAccountsDrawerHeader(
             accountName: Text(nama ?? 'Nama Pengguna'),
             accountEmail: Text(RoleUtils.getRole(role ?? 1)),
-            currentAccountPicture: const CircleAvatar(
-              backgroundImage: AssetImage('lib/assets/images/user.png'),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage(image ??
+                  'https://via.placeholder.com/150'), // Placeholder image
             ),
           ),
           ListTile(
