@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spec_siandung/src/models/laporan.dart';
 import 'package:spec_siandung/src/services/api_service.dart';
@@ -159,107 +160,125 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                       style: TextStyle(
                                           color: Colors.grey[600],
                                           fontSize: 10)),
-                                  trailing: role ==
-                                          RoleUtils.getRoleIndex(
-                                              RoleUtils.student)
-                                      ? IconButton(
-                                          icon: const Icon(Icons.delete),
-                                          onPressed: () {
-                                            // Pop up dialog to delete laporan
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Hapus Laporan'),
-                                                  content: const Text(
-                                                      'Apakah Anda yakin ingin menghapus laporan ini?'),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child:
-                                                          const Text('Batal'),
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        // pop up circle loading
-                                                        showDialog(
-                                                          barrierColor:
-                                                              Colors.white60,
-                                                          context: context,
-                                                          builder: (context) {
-                                                            return const Center(
+                                  trailing:
+                                      role ==
+                                              RoleUtils.getRoleIndex(
+                                                  RoleUtils.student)
+                                          ? IconButton(
+                                              icon: const Icon(Icons.delete),
+                                              onPressed: () {
+                                                // Pop up dialog to delete laporan
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: const Text(
+                                                          'Hapus Laporan'),
+                                                      content: const Text(
+                                                          'Apakah Anda yakin ingin menghapus laporan ini?'),
+                                                      actions: [
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
                                                               child:
-                                                                  CircularProgressIndicator(),
-                                                            );
-                                                          },
-                                                        );
-
-                                                        // Delete laporan
-                                                        await apiService.deleteData(
-                                                            'delete_perundungan_by_siswa',
-                                                            {
-                                                              'id_laporan':
-                                                                  dataLaporan[
-                                                                          index]
-                                                                      .id,
-                                                            }).then((value) {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          _getLaporan();
-                                                        }).onError((error,
-                                                            stackTrace) {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          // Show error message pop up
-                                                          showDialog(
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return AlertDialog(
-                                                                title:
-                                                                    const Text(
-                                                                        'Error'),
-                                                                content: Text(
-                                                                    'Gagal menghapus laporan: $error'),
-                                                                actions: [
                                                                   ElevatedButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .red,
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child:
+                                                                    const Text(
+                                                                        'Batal'),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 10),
+                                                            Expanded(
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  // pop up circle loading
+                                                                  showDialog(
+                                                                    barrierColor:
+                                                                        Colors
+                                                                            .white60,
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return const Center(
+                                                                        child:
+                                                                            CircularProgressIndicator(),
+                                                                      );
                                                                     },
-                                                                    child:
-                                                                        const Text(
-                                                                            'OK'),
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        });
-                                                      },
-                                                      child:
-                                                          const Text('Hapus'),
-                                                    ),
-                                                  ],
+                                                                  );
+
+                                                                  // Delete laporan
+                                                                  await apiService.deleteData(
+                                                                      'delete_perundungan_by_siswa',
+                                                                      {
+                                                                        'id_laporan':
+                                                                            dataLaporan[index].id,
+                                                                      }).then(
+                                                                      (value) {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    _getLaporan();
+                                                                  }).onError((error,
+                                                                      stackTrace) {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    // Show error message pop up
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (context) {
+                                                                        return AlertDialog(
+                                                                          title:
+                                                                              const Text('Error'),
+                                                                          content:
+                                                                              Text('Gagal menghapus laporan: $error'),
+                                                                          actions: [
+                                                                            ElevatedButton(
+                                                                              onPressed: () {
+                                                                                Navigator.of(context).pop();
+                                                                              },
+                                                                              child: const Text('OK'),
+                                                                            ),
+                                                                          ],
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    const Text(
+                                                                        'Hapus'),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    );
+                                                  },
                                                 );
                                               },
-                                            );
-                                          },
-                                        )
-                                      : null),
+                                            )
+                                          : null),
                             );
                           },
                         )
@@ -286,61 +305,81 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                       controller: keteranganController,
                                       decoration: const InputDecoration(
                                         labelText: 'Keterangan',
+                                        hintText:
+                                            'Tuliskan keterangan laporan disini...',
+                                        border: OutlineInputBorder(),
+                                        alignLabelWithHint: true,
+                                        hintStyle: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
                                       ),
+                                      maxLines: 8,
                                     ),
                                   ],
                                 ),
                                 actions: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('Batal'),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      showDialog(
-                                        barrierColor: Colors.white60,
-                                        context: context,
-                                        builder: (context) {
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        },
-                                      );
-                                      // Add new laporan
-                                      await _createLaporan().then((value) {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
-                                      }).onError((error, stackTrace) {
-                                        Navigator.of(context).pop();
-                                        // Show error message pop up
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: const Text('Error'),
-                                              content: Text(
-                                                  'Gagal menambahkan laporan: $error'),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: const Text('OK'),
-                                                ),
-                                              ],
-                                            );
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
                                           },
-                                        );
-                                      });
-                                    },
-                                    child: const Text('Tambah'),
-                                  ),
+                                          child: const Text('Batal'),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            showDialog(
+                                              barrierColor: Colors.white60,
+                                              context: context,
+                                              builder: (context) {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              },
+                                            );
+                                            // Add new laporan
+                                            await _createLaporan()
+                                                .then((value) {
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            }).onError((error, stackTrace) {
+                                              Navigator.of(context).pop();
+                                              // Show error message pop up
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text('Error'),
+                                                    content: Text(
+                                                        'Gagal menambahkan laporan: $error'),
+                                                    actions: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text('OK'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            });
+                                          },
+                                          child: const Text('Tambah'),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                 ],
                               );
                             },

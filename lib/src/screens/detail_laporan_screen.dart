@@ -59,10 +59,18 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
     setState(() {});
   }
 
+  // set the text controller value
+  void _setTextControllerValue(String value) {
+    _keteranganController.text = value;
+  }
+
   @override
   Widget build(BuildContext context) {
     // get arguments from previous screen
     final args = ModalRoute.of(context)!.settings.arguments as Laporan;
+
+    // set the text controller value
+    _setTextControllerValue(args.keterangan ?? '');
 
     return Scaffold(
       appBar: AppBar(
@@ -75,7 +83,8 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding:
+                        const EdgeInsets.only(top: 16, right: 16, left: 16),
                     alignment: Alignment.centerLeft,
                     child: Text('${args.klarifikasi}',
                         style: TextStyle(
@@ -83,11 +92,14 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                         textAlign: TextAlign.left),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.only(
+                        right: 16, left: 16, top: 10, bottom: 5),
                     alignment: Alignment.centerLeft,
                     child: Text('Detail Laporan:',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
                         textAlign: TextAlign.left),
                   ),
                   // text paragraph dari laporan
@@ -96,7 +108,7 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(args.keterangan ?? '',
-                            style: TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, height: 1.5),
                             textAlign: TextAlign.justify),
                       ),
                     ),
@@ -142,6 +154,14 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                                             controller: _keteranganController,
                                             decoration: const InputDecoration(
                                               labelText: 'Keterangan',
+                                              hintText:
+                                                  'Tuliskan keterangan laporan disini...',
+                                              border: OutlineInputBorder(),
+                                              alignLabelWithHint: true,
+                                              hintStyle: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
                                             ),
                                             validator: (value) {
                                               if (value == null ||
@@ -197,11 +217,13 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                                                   setState(() {});
 
                                                   Navigator.pop(context);
+                                                  Navigator.pop(context);
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(SnackBar(
                                                           content: Text(
                                                               'Berhasil mengupdate laporan')));
                                                 } else {
+                                                  Navigator.pop(context);
                                                   Navigator.pop(context);
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(SnackBar(

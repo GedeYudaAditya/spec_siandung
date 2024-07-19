@@ -44,11 +44,10 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     Widget userAvatar = Row(
       children: [
-        Image.network(
-          image ?? 'https://via.placeholder.com/150',
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
+        CircleAvatar(
+          backgroundImage: NetworkImage(image != null
+              ? "https://mobile.siandung.com/assets/img/${RoleUtils.getRole(role ?? 1).toLowerCase()}/${image}"
+              : 'https://via.placeholder.com/150'), // Placeholder image
         ),
         const SizedBox(width: 10),
         Column(

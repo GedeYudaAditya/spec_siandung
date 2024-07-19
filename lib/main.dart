@@ -7,6 +7,7 @@ import 'package:spec_siandung/src/screens/detail_laporan_screen.dart';
 import 'package:spec_siandung/src/screens/laporan_screen.dart';
 import 'package:spec_siandung/src/screens/log_screen.dart';
 import 'package:spec_siandung/src/screens/login_screen.dart';
+import 'package:spec_siandung/src/screens/pengaturan_screen.dart';
 import 'package:spec_siandung/src/screens/register_screen.dart';
 import 'package:spec_siandung/src/screens/splash_screen.dart';
 
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
               '/home': (context) => const LaporanScreen(),
               '/detail-laporan': (context) => const DetailLaporanScreen(),
               '/log': (context) => const LogScreen(),
+              '/pengaturan': (context) => const PengaturanScreen(),
             },
           );
         },
