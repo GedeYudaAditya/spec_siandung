@@ -20,6 +20,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
   String? id;
   String? nama;
   int? role;
+  String? image;
 
   // get shared preferences
   Future<void> _getSharedPrefs() async {
@@ -28,6 +29,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     id = prefs.getString('id');
     nama = prefs.getString('nama');
     role = prefs.getInt('role');
+    image = prefs.getString('foto');
     setState(() {});
   }
 
@@ -42,11 +44,11 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     Widget userAvatar = Row(
       children: [
-        Image.asset(
-          fit: BoxFit.fill,
-          'lib/assets/images/user.png',
-          width: 30,
-          height: 30,
+        Image.network(
+          image ?? 'https://via.placeholder.com/150',
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
         ),
         const SizedBox(width: 10),
         Column(
