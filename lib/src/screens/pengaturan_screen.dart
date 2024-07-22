@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spec_siandung/src/services/api_service.dart';
 import 'package:spec_siandung/src/utils/role_utils.dart';
 import 'package:spec_siandung/src/widgets/app_bar_widget.dart';
 import 'package:spec_siandung/src/widgets/drawer_widget.dart';
@@ -18,8 +19,9 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
   // for text fields
   final TextEditingController _namaController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _noTelpController = TextEditingController();
+
+  final apiService = ApiService();
 
   String? token;
   String? id;
@@ -48,7 +50,6 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
   // set text fields
   void _setFields() {
     _emailController.text = email ?? '';
-    _usernameController.text = username ?? '';
     _noTelpController.text = noTelp ?? '';
     _namaController.text = nama ?? '';
   }
@@ -74,9 +75,10 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
             children: <Widget>[
               // Avatar and fields set image, name, phone, email.
               CircleAvatar(
-                backgroundImage: NetworkImage(image != null
-                    ? "https://mobile.siandung.com/assets/img/${RoleUtils.getRole(role ?? 1).toLowerCase()}/${image}"
-                    : 'https://via.placeholder.com/150'),
+                backgroundImage: NetworkImage(image ??
+                    "https://ui-avatars.com/api/?name=" +
+                        nama! +
+                        "&background=random"),
                 radius: 100,
               ),
               SizedBox(height: 10),
@@ -128,18 +130,6 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                         ),
                       ),
                       TextFormField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.person),
-                          labelText: 'Username',
-                          hintText: 'Username',
-                          hintStyle: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      TextFormField(
                         controller: _noTelpController,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.phone),
@@ -159,18 +149,59 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                             final prefs = await SharedPreferences.getInstance();
                             prefs.setString('nama', _namaController.text);
                             prefs.setString('email', _emailController.text);
-                            prefs.setString(
-                                'username', _usernameController.text);
                             prefs.setString('noTelp', _noTelpController.text);
                             // Then, update the user data in the API.
+                            try {
+                              await apiService.putData('update_profile', {
+                                "email": _namaController.text,
+                                "no_telp": _noTelpController.text,
+                                "alamat": _noTelpController.text
+                              });
 
-                            // Finally, update the user data in the app.
-                            setState(() {
-                              nama = _namaController.text;
-                              email = _emailController.text;
-                              username = _usernameController.text;
-                              noTelp = _noTelpController.text;
-                            });
+                              // Finally, update the user data in the app.
+                              setState(() {
+                                nama = _namaController.text;
+                                email = _emailController.text;
+                                noTelp = _noTelpController.text;
+                              });
+
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: Text('Data Terupdate'),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } catch (e) {
+                              print(e);
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: Text('Gagal Melakukan Perubahan'),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           }),
                     ],
                   );

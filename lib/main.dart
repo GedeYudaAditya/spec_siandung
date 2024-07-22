@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:spec_siandung/app_theme.dart';
 import 'package:spec_siandung/src/providers/auth_provider.dart';
 import 'package:spec_siandung/src/providers/theme_provider.dart';
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ShowCaseWidgetState> _showcaseKey =
+        GlobalKey<ShowCaseWidgetState>();
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
@@ -29,19 +33,22 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            theme: themeProvider.themeData,
-            home: const SplashScreen(),
-            routes: {
-              '/login': (context) => const LoginScreen(),
-              '/register': (context) => const RegisterScreen(),
-              '/home': (context) => const LaporanScreen(),
-              '/detail-laporan': (context) => const DetailLaporanScreen(),
-              '/log': (context) => const LogScreen(),
-              '/pengaturan': (context) => const PengaturanScreen(),
-            },
+          return ShowCaseWidget(
+            builder: (context) => MaterialApp(
+              key: _showcaseKey,
+              debugShowCheckedModeBanner: false,
+              title: 'Flutter Demo',
+              theme: themeProvider.themeData,
+              home: const SplashScreen(),
+              routes: {
+                '/login': (context) => const LoginScreen(),
+                '/register': (context) => const RegisterScreen(),
+                '/home': (context) => const LaporanScreen(),
+                '/detail-laporan': (context) => const DetailLaporanScreen(),
+                '/log': (context) => const LogScreen(),
+                '/pengaturan': (context) => const PengaturanScreen(),
+              },
+            ),
           );
         },
       ),

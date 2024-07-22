@@ -33,7 +33,8 @@ class _LogScreenState extends State<LogScreen> {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  List<Log> logs = Log.fromJsonList(snapshot.data!['data']);
+                  List<Log> logs =
+                      Log.fromJsonList(snapshot.data!['data']['log']);
                   return ListView.builder(
                     shrinkWrap: true,
                     itemCount: logs.length,

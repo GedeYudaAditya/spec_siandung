@@ -44,9 +44,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             accountName: Text(nama ?? 'Nama Pengguna'),
             accountEmail: Text(RoleUtils.getRole(role ?? 1)),
             currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage(image != null
-                  ? "https://mobile.siandung.com/assets/img/${RoleUtils.getRole(role ?? 1).toLowerCase()}/${image}"
-                  : 'https://via.placeholder.com/150'), // Placeholder image
+              backgroundImage: NetworkImage(image ??
+                  "https://ui-avatars.com/api/?name=" +
+                      nama! +
+                      "&background=random"), // Placeholder image
             ),
           ),
           ListTile(
