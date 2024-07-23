@@ -40,6 +40,7 @@ class ApiService {
   Future<Map<String, dynamic>> postData(
       String endpoint, Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("Payload " + data.toString());
     try {
       final token = prefs.getString('token');
 
@@ -85,7 +86,7 @@ class ApiService {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        print(response.body);
+        print(data);
         throw Exception('Failed to put data');
       }
     } catch (e) {

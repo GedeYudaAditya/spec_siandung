@@ -43,11 +43,21 @@ class _LaporanScreenState extends State<LaporanScreen> {
       _getSharedPrefs();
       dataIsReady = true;
     });
-    //Start showcase view after current widget frames are drawn.
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) =>
-          ShowCaseWidget.of(context).startShowCase([_one, _two, _there, _four]),
-    );
+    _startShowcase();
+  }
+
+  Future<void> _startShowcase() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool? showcaseSeen = prefs.getBool('showcase_seen');
+
+    if (showcaseSeen == null || !showcaseSeen) {
+      //Start showcase view after current widget frames are drawn.
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ShowCaseWidget.of(context)
+            .startShowCase([_one, _two, _there, _four]),
+      );
+      prefs.setBool('showcase_seen', true);
+    }
   }
 
   Future<void> _getLaporan() async {

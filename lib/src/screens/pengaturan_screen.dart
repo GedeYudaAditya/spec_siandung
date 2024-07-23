@@ -20,6 +20,9 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
   final TextEditingController _namaController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _noTelpController = TextEditingController();
+  final TextEditingController _passwordNewController = TextEditingController();
+  final TextEditingController _passwordOldController = TextEditingController();
+  final TextEditingController _passwordConfController = TextEditingController();
 
   final apiService = ApiService();
 
@@ -73,11 +76,12 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(height: 50),
               // Avatar and fields set image, name, phone, email.
               CircleAvatar(
                 backgroundImage: NetworkImage(image ??
                     "https://ui-avatars.com/api/?name=" +
-                        nama! +
+                        (nama ?? "") +
                         "&background=random"),
                 radius: 100,
               ),
@@ -203,6 +207,100 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                               );
                             }
                           }),
+                      SizedBox(height: 20),
+                      Divider(),
+                      SizedBox(height: 20),
+                      Text("Keamanan"),
+                      TextFormField(
+                        controller: _passwordOldController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.lock_clock),
+                          labelText: 'Password Lama',
+                          hintText: 'Password Lama',
+                          hintStyle: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        obscureText: true,
+                      ),
+                      TextFormField(
+                        controller: _passwordNewController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.lock),
+                          labelText: 'Password Baru',
+                          hintText: 'Password Baru',
+                          hintStyle: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        obscureText: true,
+                      ),
+                      TextFormField(
+                        controller: _passwordConfController,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.safety_check),
+                          labelText: 'Konfirmasi Password',
+                          hintText: 'Konfirmasi Password',
+                          hintStyle: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        obscureText: true,
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                          child: const Text('Ubah Password'),
+                          onPressed: () async {
+                            // Then, update the user data in the API.
+                            try {
+                              await apiService.putData('ganti_password', {
+                                "password_lama": _passwordOldController.text,
+                                "password_now": _passwordNewController.text,
+                                "password_confirm": _passwordConfController.text
+                              });
+
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: Text('Data Terupdate'),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } catch (e) {
+                              print(e);
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Error'),
+                                    content: Text('Gagal Melakukan Perubahan'),
+                                    actions: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          }),
+                      SizedBox(height: 50),
                     ],
                   );
                 }),

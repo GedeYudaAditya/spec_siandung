@@ -22,7 +22,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token');
     id = prefs.getString('id');
-    nama = prefs.getString('nama');
+    nama = prefs.getString('nama') ?? '';
     role = prefs.getInt('role');
     image = prefs.getString('foto');
 
@@ -46,7 +46,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(image ??
                   "https://ui-avatars.com/api/?name=" +
-                      nama! +
+                      (nama ?? "") +
                       "&background=random"), // Placeholder image
             ),
           ),
