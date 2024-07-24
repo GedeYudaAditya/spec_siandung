@@ -30,6 +30,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
   String? id;
   String? nama;
   int? role;
+  String? noTelp;
 
   TextEditingController keteranganController = TextEditingController();
 
@@ -71,7 +72,6 @@ class _LaporanScreenState extends State<LaporanScreen> {
     dataLaporan = listLaporan.map((e) => Laporan.fromJson(e)).toList();
     setState(() {
       dataLaporan = dataLaporan;
-      dataIsReady = true;
     });
   }
 
@@ -95,6 +95,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
     id = prefs.getString('id');
     nama = prefs.getString('nama');
     role = prefs.getInt('role');
+    noTelp = prefs.getString('noTelp');
     setState(() {});
   }
 
@@ -144,30 +145,84 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   Center(
                     child: Container(
                       height: 100,
-                      color: Color.fromARGB(209, 88, 115, 129),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "List Laporan Perundungan",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            "Jangan takut untuk melaporkan tindakakan perundungan untuk kenyamanan belajar anda di sekolah",
-                            style: TextStyle(
-                              color: Colors.grey[300],
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          )
-                        ],
-                      ),
+                      color: Color.fromARGB(209, 59, 76, 85),
+                      child: (noTelp != null)
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "List Laporan Perundungan",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                (noTelp!.isNotEmpty)
+                                    ? Text(
+                                        "Jangan takut untuk melaporkan tindakakan perundungan untuk kenyamanan belajar anda di sekolah",
+                                        style: TextStyle(
+                                          color: Colors.grey[300],
+                                          fontSize: 12,
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      )
+                                    : Column(
+                                        children: [
+                                          Text(
+                                            "Lengkapi data anda pada pengaturan ",
+                                            style: TextStyle(
+                                              color: Colors.grey[300],
+                                              fontSize: 12,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              InkWell(
+                                                  onTap: () {
+                                                    Navigator.of(context)
+                                                        .pushReplacementNamed(
+                                                            '/pengaturan');
+                                                  },
+                                                  child: Text(
+                                                    "profile",
+                                                    style: TextStyle(
+                                                      decoration: TextDecoration
+                                                          .underline,
+                                                      color: Colors.blue,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      decorationColor:
+                                                          Colors.blue,
+                                                      decorationThickness: 3,
+                                                    ),
+                                                  )),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                "sebelum menambahkan pelaporan",
+                                                style: TextStyle(
+                                                  color: Colors.grey[300],
+                                                  fontSize: 12,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      )
+                              ],
+                            )
+                          : null,
                     ),
                   ),
                 ],
@@ -199,8 +254,14 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                           EdgeInsets.symmetric(horizontal: 10),
                                       onTap: () {
                                         if (RoleUtils.getRoleIndex(
-                                                RoleUtils.psychologist) ==
-                                            role) {
+                                                    RoleUtils.psychologist) ==
+                                                role ||
+                                            RoleUtils.getRoleIndex(
+                                                    RoleUtils.teacher) ==
+                                                role ||
+                                            RoleUtils.getRoleIndex(
+                                                    RoleUtils.admin) ==
+                                                role) {
                                           Navigator.pushNamed(
                                             context,
                                             '/log',
@@ -218,17 +279,37 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                         // backgroundColor: Colors.red[100],
                                         child: const Icon(Icons.campaign),
                                       ),
-                                      title: Text(
-                                          dataLaporan[index].klarifikasi ?? '',
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold)),
-                                      subtitle: Text(
-                                          dataLaporan[index].dateCreated ?? '',
-                                          style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontSize: 10)),
+                                      title: role ==
+                                              RoleUtils.getRoleIndex(
+                                                  RoleUtils.student)
+                                          ? Text(dataLaporan[index].klarifikasi ?? '',
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold))
+                                          : Text(dataLaporan[index].namaPelapor ?? '',
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
+                                      subtitle: role ==
+                                              RoleUtils.getRoleIndex(
+                                                  RoleUtils.student)
+                                          ? Text(
+                                              dataLaporan[index].dateCreated ??
+                                                  '',
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold))
+                                          : Text(
+                                              dataLaporan[index].klarifikasi ??
+                                                  '',
+                                              style: TextStyle(
+                                                  color: Colors.grey[600],
+                                                  fontSize: 10),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                       trailing:
                                           role ==
                                                   RoleUtils.getRoleIndex(
@@ -345,7 +426,16 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                                     },
                                                   ),
                                                 )
-                                              : null),
+                                              : Text(
+                                                  dataLaporan[index]
+                                                          .dateCreated ??
+                                                      '',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 10),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )),
                                 );
                               } else {
                                 return ListTile(
@@ -372,17 +462,37 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                       // backgroundColor: Colors.red[100],
                                       child: const Icon(Icons.campaign),
                                     ),
-                                    title: Text(
-                                        dataLaporan[index].klarifikasi ?? '',
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold)),
-                                    subtitle: Text(
-                                        dataLaporan[index].dateCreated ?? '',
-                                        style: TextStyle(
-                                            color: Colors.grey[600],
-                                            fontSize: 10)),
+                                    title: role ==
+                                            RoleUtils.getRoleIndex(
+                                                RoleUtils.student)
+                                        ? Text(dataLaporan[index].klarifikasi ?? '',
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold))
+                                        : Text(dataLaporan[index].namaPelapor ?? '',
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold)),
+                                    subtitle: role ==
+                                            RoleUtils.getRoleIndex(
+                                                RoleUtils.student)
+                                        ? Text(
+                                            dataLaporan[index].dateCreated ??
+                                                '',
+                                            style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold))
+                                        : Text(
+                                            dataLaporan[index].klarifikasi ??
+                                                '',
+                                            style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 10),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                     trailing:
                                         role ==
                                                 RoleUtils.getRoleIndex(
@@ -504,7 +614,15 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                                   );
                                                 },
                                               )
-                                            : null);
+                                            : Text(
+                                                dataLaporan[index]
+                                                        .dateCreated ??
+                                                    '',
+                                                style: TextStyle(
+                                                    color: Colors.grey[600],
+                                                    fontSize: 10),
+                                                overflow: TextOverflow.ellipsis,
+                                              ));
                               }
                             },
                           ),

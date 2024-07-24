@@ -128,7 +128,8 @@ class _DetailLaporanScreenState extends State<DetailLaporanScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               // navigate ke halaman log
-                              Navigator.pushNamed(context, '/log');
+                              Navigator.pushNamed(context, '/log',
+                                  arguments: args);
                             },
                             child: Text('Lihat Log'),
                           ),
