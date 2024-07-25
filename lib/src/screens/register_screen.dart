@@ -135,20 +135,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    bool success = await authProvider.register(
+                                    Map<String, dynamic> success =
+                                        await authProvider.register(
                                       _nisnController.text,
                                       _usernameController.text,
                                       _noHpController.text,
                                       _passwordController.text,
                                     );
-                                    if (success) {
+                                    print(success);
+                                    if (success['status']) {
                                       Navigator.of(context)
                                           .pushReplacementNamed('/home');
                                     } else {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Register failed')),
+                                        SnackBar(
+                                            content: Text(success['message'])),
                                       );
                                     }
                                   }

@@ -146,22 +146,22 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$_baseUrl/register'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: jsonEncode({
+      body: {
         'nisn': nisn,
         'username': username,
         'no_telp': noTelp,
         'password': password,
-      }),
+      },
     );
 
-    print(response.body);
+    print(response.statusCode);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to register ${response.body}');
+      return jsonDecode(response.body);
     }
   }
 }
