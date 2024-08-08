@@ -1,7 +1,4 @@
 class Laporan {
-  //  "nama_siswa": "Ketut Widiawati",
-  //           "nama_pelapor": "Putu Warnitiasih",
-  //           "sekolah": "SMP NEGERI 1 SUKASADA",
   Laporan({
     this.id,
     this.idKlarifikasi,
@@ -10,6 +7,7 @@ class Laporan {
     this.namaSiswa,
     this.namaPelapor,
     this.sekolah,
+    this.status,
     this.dateCreated,
   });
 
@@ -20,6 +18,7 @@ class Laporan {
   String? namaSiswa;
   String? namaPelapor;
   String? sekolah;
+  String? status;
   String? dateCreated;
 
   factory Laporan.fromJson(Map<String, dynamic> json) => Laporan(
@@ -30,6 +29,7 @@ class Laporan {
         namaSiswa: json["nama_siswa"],
         namaPelapor: json["nama_pelapor"],
         sekolah: json["sekolah"],
+        status: json['status'],
         dateCreated: json["date_created"],
       );
 
@@ -41,6 +41,7 @@ class Laporan {
         "nama_siswa": namaSiswa,
         "nama_pelapor": namaPelapor,
         "sekolah": sekolah,
+        "status": status,
         "date_created": dateCreated,
       };
 

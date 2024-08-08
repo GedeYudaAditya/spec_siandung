@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spec_siandung/app_theme.dart';
 import '../providers/auth_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -24,6 +25,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.initState();
     // Check "Remember Me" status when the login screen is initialized
     Provider.of<AuthProvider>(context, listen: false).checkRememberMe();
+  }
+
+  _launchURL() async {
+    final Uri url = Uri.parse('https://wa.me/+6282220202358');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -159,20 +167,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                       const SizedBox(height: 20),
                       // Register text redirect
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Column(
                         children: [
-                          const Text('Sudah punya akun? '),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pushNamed('/login');
-                            },
-                            child: const Text(
-                              'Masuk',
-                              style: TextStyle(
-                                color: Colors.blue,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Sudah punya akun? '),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushNamed('/login');
+                                },
+                                child: const Text(
+                                  'Masuk',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('NISN belum terdaftar? '),
+                              GestureDetector(
+                                onTap: () async {
+                                  await _launchURL();
+                                },
+                                child: const Text(
+                                  'Daftarkan NISN',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

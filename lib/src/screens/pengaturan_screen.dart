@@ -173,7 +173,7 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: const Text('Error'),
+                                    title: const Text('Berhasil'),
                                     content: Text('Data Terupdate'),
                                     actions: [
                                       ElevatedButton(
@@ -266,7 +266,7 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: const Text('Error'),
+                                    title: const Text('Berhasil'),
                                     content: Text('Data Terupdate'),
                                     actions: [
                                       ElevatedButton(
