@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final String _baseUrl = 'https://mobile.siandung.com/api';
+  final String _baseUrl = 'https://siandung.com/api';
 
   // Example of a GET request
   Future<Map<String, dynamic>> fetchData(String endpoint) async {
@@ -40,6 +40,7 @@ class ApiService {
   Future<Map<String, dynamic>> postData(
       String endpoint, Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("Payload " + data.toString());
     try {
       final token = prefs.getString('token');
 
@@ -85,7 +86,7 @@ class ApiService {
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
-        print(response.body);
+        print(data);
         throw Exception('Failed to put data');
       }
     } catch (e) {
@@ -145,14 +146,14 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$_baseUrl/register'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: jsonEncode({
+      body: {
         'nisn': nisn,
         'username': username,
         'no_telp': noTelp,
         'password': password,
-      }),
+      },
     );
 
     print(response.body);
@@ -160,7 +161,7 @@ class ApiService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to register ${response.body}');
+      return jsonDecode(response.body);
     }
   }
 }

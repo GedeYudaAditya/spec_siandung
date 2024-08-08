@@ -27,7 +27,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token');
     id = prefs.getString('id');
-    nama = prefs.getString('nama');
+    nama = prefs.getString('nama') ?? '';
     role = prefs.getInt('role');
     image = prefs.getString('foto');
     setState(() {});
@@ -44,11 +44,13 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     Widget userAvatar = Row(
       children: [
-        CircleAvatar(
-          backgroundImage: NetworkImage(image != null
-              ? "https://mobile.siandung.com/assets/img/${RoleUtils.getRole(role ?? 1).toLowerCase()}/${image}"
-              : 'https://via.placeholder.com/150'), // Placeholder image
-        ),
+        if (nama != null)
+          CircleAvatar(
+            backgroundImage: NetworkImage(image ??
+                "https://ui-avatars.com/api/?name=" +
+                    nama! +
+                    "&background=random"), // Placeholder image
+          ),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

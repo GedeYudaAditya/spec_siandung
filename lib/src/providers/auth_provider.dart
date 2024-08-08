@@ -77,7 +77,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Register a new user
-  Future<bool> register(
+  Future<Map<String, dynamic>> register(
       String nisn, String username, String noTelp, String password) async {
     _isLoading = true;
     notifyListeners();
@@ -86,28 +86,33 @@ class AuthProvider with ChangeNotifier {
       final response =
           await _apiService.register(nisn, username, noTelp, password);
       // Handle the response, save tokens, etc.
+      print("response register:" + response.toString());
 
       // if successful, login the user
-      if (response['status']) {
+      if (response['message'] == 'Siswa berhasil daftar') {
         final loginRes = await login(username, password, false);
         if (loginRes) {
           _isLoading = false;
           notifyListeners();
-          return true;
+          return {'status': true, 'message': 'Login Berhasil'};
         } else {
           _isLoading = false;
           notifyListeners();
-          return false;
+          return {
+            'status': false,
+            'message': 'Login Tidak Berhasil. Cobalah Login Kembali'
+          };
         }
       } else {
         _isLoading = false;
         notifyListeners();
-        return false;
+        return {'status': false, 'message': response['message']};
       }
-    } catch (e) {
+    } on Exception catch (e) {
+      print(e);
       _isLoading = false;
       notifyListeners();
-      return false;
+      return {'status': false, 'message': 'Terjadi Kesalahan.'};
     }
   }
 
