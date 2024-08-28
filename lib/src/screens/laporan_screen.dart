@@ -125,131 +125,336 @@ class _LaporanScreenState extends State<LaporanScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        key: _scaffoldKey,
-        // Check if there is chat bot widget
-        appBar: AppBarWidget(scaffoldKey: _scaffoldKey),
-        drawer: const DrawerWidget(),
-        body: Center(
-          // Display datatable here
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Image.asset(
-                    'lib/assets/images/home.png',
-                    height: 100,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                  Center(
-                    child: Container(
+      child: RefreshIndicator(
+        onRefresh: () => _getLaporan(),
+        child: Scaffold(
+          key: _scaffoldKey,
+          // Check if there is chat bot widget
+          appBar: AppBarWidget(scaffoldKey: _scaffoldKey),
+          drawer: const DrawerWidget(),
+          body: Center(
+            // Display datatable here
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    Image.asset(
+                      'lib/assets/images/home.png',
                       height: 100,
-                      color: Color.fromARGB(209, 59, 76, 85),
-                      child: (noTelp != null)
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "List Laporan Perundungan",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                    Center(
+                      child: Container(
+                        height: 100,
+                        color: Color.fromARGB(209, 59, 76, 85),
+                        child: (noTelp != null)
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "List Laporan Perundungan",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                (noTelp!.isNotEmpty)
-                                    ? Text(
-                                        "Jangan takut untuk melaporkan tindakakan perundungan untuk kenyamanan belajar anda di sekolah",
-                                        style: TextStyle(
-                                          color: Colors.grey[300],
-                                          fontSize: 12,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      )
-                                    : Column(
-                                        children: [
-                                          Text(
-                                            "Lengkapi data anda pada pengaturan ",
-                                            style: TextStyle(
-                                              color: Colors.grey[300],
-                                              fontSize: 12,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
+                                  (noTelp!.isNotEmpty)
+                                      ? Text(
+                                          "Jangan takut untuk melaporkan tindakakan perundungan untuk kenyamanan belajar anda di sekolah",
+                                          style: TextStyle(
+                                            color: Colors.grey[300],
+                                            fontSize: 12,
+                                            // fontWeight: FontWeight.bold,
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              InkWell(
-                                                  onTap: () {
-                                                    Navigator.of(context)
-                                                        .pushReplacementNamed(
-                                                            '/pengaturan');
-                                                  },
-                                                  child: Text(
-                                                    "profile",
-                                                    style: TextStyle(
-                                                      decoration: TextDecoration
-                                                          .underline,
-                                                      color: Colors.blue,
+                                          textAlign: TextAlign.center,
+                                        )
+                                      : Column(
+                                          children: [
+                                            Text(
+                                              "Lengkapi data anda pada pengaturan ",
+                                              style: TextStyle(
+                                                color: Colors.grey[300],
+                                                fontSize: 12,
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                InkWell(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .pushReplacementNamed(
+                                                              '/pengaturan');
+                                                    },
+                                                    child: Text(
+                                                      "profile",
+                                                      style: TextStyle(
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline,
+                                                        color: Colors.blue,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        decorationColor:
+                                                            Colors.blue,
+                                                        decorationThickness: 3,
+                                                      ),
+                                                    )),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(
+                                                  "sebelum menambahkan pelaporan",
+                                                  style: TextStyle(
+                                                    color: Colors.grey[300],
+                                                    fontSize: 12,
+                                                    // fontWeight: FontWeight.bold,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                ],
+                              )
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: Showcase(
+                    key: _one,
+                    description: 'List Laporan akan tampil disini',
+                    child: (dataIsReady)
+                        ?
+                        // Display datatable here
+                        Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ListView.builder(
+                              itemCount: dataLaporan.length,
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return Showcase(
+                                    key: (RoleUtils.getRoleIndex(
+                                                RoleUtils.student) ==
+                                            role)
+                                        ? _there
+                                        : _two,
+                                    description:
+                                        "Klik Salah Satu List Untuk Melihat Detail Laporan",
+                                    child: Container(
+                                      color: dataLaporan[index].status ==
+                                              "Selesai dari Siswa"
+                                          ? Colors.grey[200]
+                                          : null,
+                                      child: ListTile(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          onTap: () {
+                                            if (RoleUtils.getRoleIndex(RoleUtils
+                                                        .psychologist) ==
+                                                    role ||
+                                                RoleUtils.getRoleIndex(
+                                                        RoleUtils.teacher) ==
+                                                    role ||
+                                                RoleUtils.getRoleIndex(
+                                                        RoleUtils.admin) ==
+                                                    role) {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/log',
+                                                arguments: dataLaporan[index],
+                                              );
+                                            } else {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/detail-laporan',
+                                                arguments: dataLaporan[index],
+                                              );
+                                            }
+                                          },
+                                          leading: CircleAvatar(
+                                            backgroundColor: dataLaporan[index]
+                                                            .status ==
+                                                        'Selesai' ||
+                                                    dataLaporan[index].status ==
+                                                        "Selesai dari Siswa"
+                                                ? Color.fromARGB(
+                                                    255, 21, 255, 185)
+                                                : null,
+                                            child: Icon(dataLaporan[index]
+                                                            .status ==
+                                                        'Selesai' ||
+                                                    dataLaporan[index].status ==
+                                                        "Selesai dari Siswa"
+                                                ? Icons.check
+                                                : Icons.campaign),
+                                          ),
+                                          title: role == RoleUtils.getRoleIndex(RoleUtils.student)
+                                              ? Text(dataLaporan[index].klarifikasi ?? '',
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
                                                       fontSize: 12,
                                                       fontWeight:
-                                                          FontWeight.bold,
-                                                      decorationColor:
-                                                          Colors.blue,
-                                                      decorationThickness: 3,
-                                                    ),
-                                                  )),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                "sebelum menambahkan pelaporan",
-                                                style: TextStyle(
-                                                  color: Colors.grey[300],
-                                                  fontSize: 12,
-                                                  // fontWeight: FontWeight.bold,
+                                                          FontWeight.bold))
+                                              : Text(dataLaporan[index].namaPelapor ?? '',
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                          subtitle: role ==
+                                                  RoleUtils.getRoleIndex(
+                                                      RoleUtils.student)
+                                              ? Text(dataLaporan[index].dateCreated ?? '',
+                                                  style: const TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                              : Text(
+                                                  dataLaporan[index]
+                                                          .klarifikasi ??
+                                                      '',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 10),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      )
-                              ],
-                            )
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: Showcase(
-                  key: _one,
-                  description: 'List Laporan akan tampil disini',
-                  child: (dataIsReady)
-                      ?
-                      // Display datatable here
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: ListView.builder(
-                            itemCount: dataLaporan.length,
-                            itemBuilder: (context, index) {
-                              if (index == 0) {
-                                return Showcase(
-                                  key: (RoleUtils.getRoleIndex(
-                                              RoleUtils.student) ==
-                                          role)
-                                      ? _there
-                                      : _two,
-                                  description:
-                                      "Klik Salah Satu List Untuk Melihat Detail Laporan",
-                                  child: Container(
+                                          trailing:
+                                              role ==
+                                                      RoleUtils.getRoleIndex(
+                                                          RoleUtils.student)
+                                                  ? Showcase(
+                                                      key: _four,
+                                                      description:
+                                                          "Klik Tombol Ini Untuk Menghapus",
+                                                      child: IconButton(
+                                                        icon: Icon(
+                                                          Icons.delete,
+                                                          color:
+                                                              Colors.redAccent,
+                                                        ),
+                                                        onPressed: () {
+                                                          // Pop up dialog to delete laporan
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (context) {
+                                                              return AlertDialog(
+                                                                title: const Text(
+                                                                    'Hapus Laporan'),
+                                                                content: const Text(
+                                                                    'Apakah Anda yakin ingin menghapus laporan ini?'),
+                                                                actions: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child:
+                                                                            ElevatedButton(
+                                                                          style:
+                                                                              ElevatedButton.styleFrom(
+                                                                            backgroundColor:
+                                                                                Colors.red,
+                                                                          ),
+                                                                          onPressed:
+                                                                              () {
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          child:
+                                                                              const Text('Batal'),
+                                                                        ),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                          width:
+                                                                              10),
+                                                                      Expanded(
+                                                                        child:
+                                                                            ElevatedButton(
+                                                                          onPressed:
+                                                                              () async {
+                                                                            // pop up circle loading
+                                                                            showDialog(
+                                                                              barrierColor: Colors.white60,
+                                                                              context: context,
+                                                                              builder: (context) {
+                                                                                return const Center(
+                                                                                  child: CircularProgressIndicator(),
+                                                                                );
+                                                                              },
+                                                                            );
+
+                                                                            // Delete laporan
+                                                                            await apiService.deleteData(
+                                                                                'delete_perundungan_by_siswa', {
+                                                                              'id_laporan': dataLaporan[index].id,
+                                                                            }).then(
+                                                                                (value) {
+                                                                              Navigator.of(context).pop();
+                                                                              Navigator.of(context).pop();
+                                                                              _getLaporan();
+                                                                            }).onError((error,
+                                                                                stackTrace) {
+                                                                              Navigator.of(context).pop();
+                                                                              // Show error message pop up
+                                                                              showDialog(
+                                                                                context: context,
+                                                                                builder: (context) {
+                                                                                  return AlertDialog(
+                                                                                    title: const Text('Error'),
+                                                                                    content: Text('Gagal menghapus laporan: $error'),
+                                                                                    actions: [
+                                                                                      ElevatedButton(
+                                                                                        onPressed: () {
+                                                                                          Navigator.of(context).pop();
+                                                                                        },
+                                                                                        child: const Text('OK'),
+                                                                                      ),
+                                                                                    ],
+                                                                                  );
+                                                                                },
+                                                                              );
+                                                                            });
+                                                                          },
+                                                                          child:
+                                                                              const Text('Hapus'),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  )
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      dataLaporan[index]
+                                                              .dateCreated ??
+                                                          '',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontSize: 10),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    )),
+                                    ),
+                                  );
+                                } else {
+                                  return Container(
                                     color: dataLaporan[index].status ==
                                             "Selesai dari Siswa"
                                         ? Colors.grey[200]
@@ -259,14 +464,8 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                             horizontal: 10),
                                         onTap: () {
                                           if (RoleUtils.getRoleIndex(
-                                                      RoleUtils.psychologist) ==
-                                                  role ||
-                                              RoleUtils.getRoleIndex(
-                                                      RoleUtils.teacher) ==
-                                                  role ||
-                                              RoleUtils.getRoleIndex(
-                                                      RoleUtils.admin) ==
-                                                  role) {
+                                                  RoleUtils.psychologist) ==
+                                              role) {
                                             Navigator.pushNamed(
                                               context,
                                               '/log',
@@ -334,112 +533,112 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                             role ==
                                                     RoleUtils.getRoleIndex(
                                                         RoleUtils.student)
-                                                ? Showcase(
-                                                    key: _four,
-                                                    description:
-                                                        "Klik Tombol Ini Untuk Menghapus",
-                                                    child: IconButton(
-                                                      icon: Icon(
-                                                        Icons.delete,
-                                                        color: Colors.redAccent,
-                                                      ),
-                                                      onPressed: () {
-                                                        // Pop up dialog to delete laporan
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (context) {
-                                                            return AlertDialog(
-                                                              title: const Text(
-                                                                  'Hapus Laporan'),
-                                                              content: const Text(
-                                                                  'Apakah Anda yakin ingin menghapus laporan ini?'),
-                                                              actions: [
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child:
-                                                                          ElevatedButton(
-                                                                        style: ElevatedButton
-                                                                            .styleFrom(
-                                                                          backgroundColor:
-                                                                              Colors.red,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {
+                                                ? IconButton(
+                                                    icon: Icon(
+                                                      Icons.delete,
+                                                      color: Colors.redAccent,
+                                                    ),
+                                                    onPressed: () {
+                                                      // Pop up dialog to delete laporan
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return AlertDialog(
+                                                            title: const Text(
+                                                                'Hapus Laporan'),
+                                                            content: const Text(
+                                                                'Apakah Anda yakin ingin menghapus laporan ini?'),
+                                                            actions: [
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                        ElevatedButton(
+                                                                      style: ElevatedButton
+                                                                          .styleFrom(
+                                                                        backgroundColor:
+                                                                            Colors.red,
+                                                                      ),
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Batal'),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      width:
+                                                                          10),
+                                                                  Expanded(
+                                                                    child:
+                                                                        ElevatedButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        // pop up circle loading
+                                                                        showDialog(
+                                                                          barrierColor:
+                                                                              Colors.white60,
+                                                                          context:
+                                                                              context,
+                                                                          builder:
+                                                                              (context) {
+                                                                            return const Center(
+                                                                              child: CircularProgressIndicator(),
+                                                                            );
+                                                                          },
+                                                                        );
+
+                                                                        // Delete laporan
+                                                                        await apiService.deleteData(
+                                                                            'delete_perundungan_by_siswa', {
+                                                                          'id_laporan':
+                                                                              dataLaporan[index].id,
+                                                                        }).then(
+                                                                            (value) {
                                                                           Navigator.of(context)
                                                                               .pop();
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Batal'),
-                                                                      ),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        width:
-                                                                            10),
-                                                                    Expanded(
-                                                                      child:
-                                                                          ElevatedButton(
-                                                                        onPressed:
-                                                                            () async {
-                                                                          // pop up circle loading
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                          _getLaporan();
+                                                                        }).onError((error,
+                                                                            stackTrace) {
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                          // Show error message pop up
                                                                           showDialog(
-                                                                            barrierColor:
-                                                                                Colors.white60,
                                                                             context:
                                                                                 context,
                                                                             builder:
                                                                                 (context) {
-                                                                              return const Center(
-                                                                                child: CircularProgressIndicator(),
+                                                                              return AlertDialog(
+                                                                                title: const Text('Error'),
+                                                                                content: Text('Gagal menghapus laporan: $error'),
+                                                                                actions: [
+                                                                                  ElevatedButton(
+                                                                                    onPressed: () {
+                                                                                      Navigator.of(context).pop();
+                                                                                    },
+                                                                                    child: const Text('OK'),
+                                                                                  ),
+                                                                                ],
                                                                               );
                                                                             },
                                                                           );
-
-                                                                          // Delete laporan
-                                                                          await apiService.deleteData(
-                                                                              'delete_perundungan_by_siswa', {
-                                                                            'id_laporan':
-                                                                                dataLaporan[index].id,
-                                                                          }).then(
-                                                                              (value) {
-                                                                            Navigator.of(context).pop();
-                                                                            Navigator.of(context).pop();
-                                                                            _getLaporan();
-                                                                          }).onError((error,
-                                                                              stackTrace) {
-                                                                            Navigator.of(context).pop();
-                                                                            // Show error message pop up
-                                                                            showDialog(
-                                                                              context: context,
-                                                                              builder: (context) {
-                                                                                return AlertDialog(
-                                                                                  title: const Text('Error'),
-                                                                                  content: Text('Gagal menghapus laporan: $error'),
-                                                                                  actions: [
-                                                                                    ElevatedButton(
-                                                                                      onPressed: () {
-                                                                                        Navigator.of(context).pop();
-                                                                                      },
-                                                                                      child: const Text('OK'),
-                                                                                    ),
-                                                                                  ],
-                                                                                );
-                                                                              },
-                                                                            );
-                                                                          });
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Hapus'),
-                                                                      ),
+                                                                        });
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Hapus'),
                                                                     ),
-                                                                  ],
-                                                                )
-                                                              ],
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
                                                   )
                                                 : Text(
                                                     dataLaporan[index]
@@ -451,336 +650,139 @@ class _LaporanScreenState extends State<LaporanScreen> {
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                   )),
-                                  ),
-                                );
-                              } else {
-                                return Container(
-                                  color: dataLaporan[index].status ==
-                                          "Selesai dari Siswa"
-                                      ? Colors.grey[200]
-                                      : null,
-                                  child: ListTile(
-                                      contentPadding:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      onTap: () {
-                                        if (RoleUtils.getRoleIndex(
-                                                RoleUtils.psychologist) ==
-                                            role) {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/log',
-                                            arguments: dataLaporan[index],
-                                          );
-                                        } else {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/detail-laporan',
-                                            arguments: dataLaporan[index],
-                                          );
-                                        }
-                                      },
-                                      leading: CircleAvatar(
-                                        backgroundColor: dataLaporan[index]
-                                                        .status ==
-                                                    'Selesai' ||
-                                                dataLaporan[index].status ==
-                                                    "Selesai dari Siswa"
-                                            ? Color.fromARGB(255, 21, 255, 185)
-                                            : null,
-                                        child: Icon(dataLaporan[index].status ==
-                                                    'Selesai' ||
-                                                dataLaporan[index].status ==
-                                                    "Selesai dari Siswa"
-                                            ? Icons.check
-                                            : Icons.campaign),
-                                      ),
-                                      title: role ==
-                                              RoleUtils.getRoleIndex(
-                                                  RoleUtils.student)
-                                          ? Text(dataLaporan[index].klarifikasi ?? '',
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold))
-                                          : Text(dataLaporan[index].namaPelapor ?? '',
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold)),
-                                      subtitle: role ==
-                                              RoleUtils.getRoleIndex(
-                                                  RoleUtils.student)
-                                          ? Text(
-                                              dataLaporan[index].dateCreated ??
-                                                  '',
-                                              style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold))
-                                          : Text(
-                                              dataLaporan[index].klarifikasi ??
-                                                  '',
-                                              style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 10),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                      trailing:
-                                          role ==
-                                                  RoleUtils.getRoleIndex(
-                                                      RoleUtils.student)
-                                              ? IconButton(
-                                                  icon: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.redAccent,
-                                                  ),
-                                                  onPressed: () {
-                                                    // Pop up dialog to delete laporan
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          title: const Text(
-                                                              'Hapus Laporan'),
-                                                          content: const Text(
-                                                              'Apakah Anda yakin ingin menghapus laporan ini?'),
-                                                          actions: [
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    style: ElevatedButton
-                                                                        .styleFrom(
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .red,
-                                                                    ),
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                    child: const Text(
-                                                                        'Batal'),
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                    width: 10),
-                                                                Expanded(
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      // pop up circle loading
-                                                                      showDialog(
-                                                                        barrierColor:
-                                                                            Colors.white60,
-                                                                        context:
-                                                                            context,
-                                                                        builder:
-                                                                            (context) {
-                                                                          return const Center(
-                                                                            child:
-                                                                                CircularProgressIndicator(),
-                                                                          );
-                                                                        },
-                                                                      );
-
-                                                                      // Delete laporan
-                                                                      await apiService.deleteData(
-                                                                          'delete_perundungan_by_siswa', {
-                                                                        'id_laporan':
-                                                                            dataLaporan[index].id,
-                                                                      }).then(
-                                                                          (value) {
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                        _getLaporan();
-                                                                      }).onError(
-                                                                          (error,
-                                                                              stackTrace) {
-                                                                        Navigator.of(context)
-                                                                            .pop();
-                                                                        // Show error message pop up
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          builder:
-                                                                              (context) {
-                                                                            return AlertDialog(
-                                                                              title: const Text('Error'),
-                                                                              content: Text('Gagal menghapus laporan: $error'),
-                                                                              actions: [
-                                                                                ElevatedButton(
-                                                                                  onPressed: () {
-                                                                                    Navigator.of(context).pop();
-                                                                                  },
-                                                                                  child: const Text('OK'),
-                                                                                ),
-                                                                              ],
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      });
-                                                                    },
-                                                                    child: const Text(
-                                                                        'Hapus'),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                )
-                                              : Text(
-                                                  dataLaporan[index]
-                                                          .dateCreated ??
-                                                      '',
-                                                  style: TextStyle(
-                                                      color: Colors.grey[600],
-                                                      fontSize: 10),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                );
-                              }
-                            },
+                                  );
+                                }
+                              },
+                            ),
+                          )
+                        :
+                        // Display loading indicator here
+                        const Center(
+                            child: CircularProgressIndicator(),
                           ),
-                        )
-                      :
-                      // Display loading indicator here
-                      const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                  ),
                 ),
-              ),
-              // Add button here
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-                child: role == RoleUtils.getRoleIndex(RoleUtils.student)
-                    ? Showcase(
-                        key: _two,
-                        description:
-                            'Klik Tombol Berikut Untuk Menambahkan Laporan',
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Pop up dialog to add new laporan
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('Tambah Laporan'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextField(
-                                        controller: keteranganController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Keterangan',
-                                          hintText:
-                                              'Tuliskan keterangan laporan disini...',
-                                          border: OutlineInputBorder(),
-                                          alignLabelWithHint: true,
-                                          hintStyle: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        maxLines: 8,
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    Row(
+                // Add button here
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+                  child: role == RoleUtils.getRoleIndex(RoleUtils.student)
+                      ? Showcase(
+                          key: _two,
+                          description:
+                              'Klik Tombol Berikut Untuk Menambahkan Laporan',
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Pop up dialog to add new laporan
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Tambah Laporan'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
+                                        TextField(
+                                          controller: keteranganController,
+                                          decoration: const InputDecoration(
+                                            labelText: 'Keterangan',
+                                            hintText:
+                                                'Tuliskan keterangan laporan disini...',
+                                            border: OutlineInputBorder(),
+                                            alignLabelWithHint: true,
+                                            hintStyle: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
                                             ),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text('Batal'),
                                           ),
+                                          maxLines: 8,
                                         ),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              showDialog(
-                                                barrierColor: Colors.white60,
-                                                context: context,
-                                                builder: (context) {
-                                                  return const Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  );
-                                                },
-                                              );
-                                              // Add new laporan
-                                              await _createLaporan()
-                                                  .then((value) {
+                                      ],
+                                    ),
+                                    actions: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                              ),
+                                              onPressed: () {
                                                 Navigator.of(context).pop();
-                                                Navigator.of(context).pop();
-                                              }).onError((error, stackTrace) {
-                                                Navigator.of(context).pop();
-                                                // Show error message pop up
+                                              },
+                                              child: const Text('Batal'),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () async {
                                                 showDialog(
+                                                  barrierColor: Colors.white60,
                                                   context: context,
                                                   builder: (context) {
-                                                    return AlertDialog(
-                                                      title:
-                                                          const Text('Error'),
-                                                      content: Text(
-                                                          'Gagal menambahkan laporan: $error'),
-                                                      actions: [
-                                                        ElevatedButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          child:
-                                                              const Text('OK'),
-                                                        ),
-                                                      ],
+                                                    return const Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
                                                     );
                                                   },
                                                 );
-                                              });
-                                            },
-                                            child: const Text('Tambah'),
+                                                // Add new laporan
+                                                await _createLaporan()
+                                                    .then((value) {
+                                                  Navigator.of(context).pop();
+                                                  Navigator.of(context).pop();
+                                                }).onError((error, stackTrace) {
+                                                  Navigator.of(context).pop();
+                                                  // Show error message pop up
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title:
+                                                            const Text('Error'),
+                                                        content: Text(
+                                                            'Gagal menambahkan laporan: $error'),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: const Text(
+                                                                'OK'),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                });
+                                              },
+                                              child: const Text('Tambah'),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.add),
-                              Text('Tambah Laporan'),
-                            ],
+                                        ],
+                                      )
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add),
+                                Text('Tambah Laporan'),
+                              ],
+                            ),
                           ),
+                        )
+                      : SizedBox(
+                          height: 0,
                         ),
-                      )
-                    : SizedBox(
-                        height: 0,
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
