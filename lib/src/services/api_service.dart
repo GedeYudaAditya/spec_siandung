@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final String _baseUrl = 'https://siandung.com/api';
+  final String _baseUrl = 'https://siap.bulelengkab.go.id/api';
 
   // Example of a GET request
   Future<Map<String, dynamic>> fetchData(String endpoint) async {
