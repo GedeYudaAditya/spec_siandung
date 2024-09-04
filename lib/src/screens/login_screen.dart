@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                           ),
-                          // const SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -107,15 +107,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
 
                               // Add a "Forgot Password" button
-                              TextButton(
-                                onPressed: () {
-                                  // Navigate to the "Forgot Password" screen
-                                  Navigator.of(context)
-                                      .pushNamed('/forgot-password');
-                                },
-                                child: const Text('Forgot Password?',
-                                    style: TextStyle(fontSize: 12)),
-                              ),
+                              // TextButton(
+                              //   onPressed: () {
+                              //     // Navigate to the "Forgot Password" screen
+                              //     Navigator.of(context)
+                              //         .pushNamed('/forgot-password');
+                              //   },
+                              //   child: const Text('Forgot Password?',
+                              //       style: TextStyle(fontSize: 12)),
+                              // ),
                             ],
                           ),
                           const SizedBox(height: 20),
